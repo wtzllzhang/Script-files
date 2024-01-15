@@ -35,6 +35,7 @@ design = data.frame(seq(166908, 166911),
 colnames(design) = c('sampleID', 'condition')
 
 varibleGenes = c()
+
 for(n in 1:nrow(design))
 {
   # n = 1
