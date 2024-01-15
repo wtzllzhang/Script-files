@@ -7,7 +7,6 @@
 # Date of creation: Fri Aug 27 11:39:22 2021
 ##########################################################################
 ##########################################################################
-# setup for data import and sequencing QCs
 rm(list = ls())
 
 version.analysis = '_R11934_20210827_neonatal'
@@ -31,6 +30,7 @@ species = 'mouse_neonadal'
 design = data.frame(seq(166908, 166911), 
                     c(paste0('neonatal.day', c(1, 4, 7, 14))), 
                     stringsAsFactors = FALSE)
+
 colnames(design) = c('sampleID', 'condition')
 
 varibleGenes = c()
