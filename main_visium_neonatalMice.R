@@ -21,6 +21,7 @@ dataDir = '../R11934_visium_mice'
 
 species = 'mouse_neonadal'
 
+
 ########################################################
 ########################################################
 # Section I : import the processed visium data by spaceranger
@@ -34,7 +35,6 @@ design = data.frame(seq(166908, 166911),
 colnames(design) = c('sampleID', 'condition')
 
 varibleGenes = c()
-
 for(n in 1:nrow(design))
 {
   # n = 1
