@@ -1,0 +1,71 @@
+//get a folder as input and list all files in it
+directory = getDirectory("Open Image folders");
+fileListArray = getFileList(directory);
+//Go through all jpg files and process each one
+for (fileIndex = 0; fileIndex < lengthOf(fileListArray); fileIndex++) {
+	if (endsWith(fileListArray[fileIndex], 'jpg')) {
+		open(directory+fileListArray[fileIndex]);
+		print("processing:",fileListArray[fileIndex]);
+		print(" ");
+		ProcessFile();
+	}
+}
+		
+function ProcessFile() {
+
+	roiManager("reset");
+	rename("H&E");
+	//split RGB to H&E and process images
+	run("Duplicate...", " ");
+	rename("TotalSection");
+	run("8-bit");
+	run("Invert");
+	//Select only left ventricle and without residual blood/papillaries 
+	setTool("Freehand selections");
+	waitForUser("Draw to clear everything outside, click OK when you are done");
+	run("Clear Outside");
+	run("Select None");
+	waitForUser("Draw to clear everything inside, click OK when you are done");
+	run("Clear");
+	run("Select None");
+	//Mask left ventricle and add to ROI
+	setAutoThreshold("Default dark");
+	run("Convert to Mask");
+	run("Create Selection");
+	roiManager("Add");
+	run("Select None");
+	//Reveal scars within left ventricle
+	selectWindow("H&E");
+	run("Colour Deconvolution", "vectors=[H DAB]");
+	selectWindow("H&E-(Colour_2)");
+	close();
+	selectWindow("H&E-(Colour_3)");
+	close();
+	selectWindow("H&E-(Colour_1)");
+	rename("Scar");
+	run("Invert");
+	roiManager("Select", 0);
+	run("Clear Outside");
+	//Mask scars and add to ROI
+	setAutoThreshold("MaxEntropy dark");
+	//setAutoThreshold("MaxEntropy dark stack");
+	run("Convert to Mask");
+	run("Create Selection");
+	roiManager("Add");
+	run("Select None");
+	//Measure ventricle and scar, and produce overlay of original image and scar ROI for quality control
+	selectWindow("H&E");
+	roiManager("Select", 0);
+	roiManager("Set Color", "yellow");
+	roiManager("Measure");
+	roiManager("Select", 1);
+	roiManager("Set Color", "red");
+	roiManager("Measure");
+	roiManager("Show All without labels");
+	run("Flatten");
+	rename("quality control");
+	selectWindow("H&E");
+	close();
+	waitForUser("Inspect quality, click OK when you are done");
+	run("Close All");
+}
